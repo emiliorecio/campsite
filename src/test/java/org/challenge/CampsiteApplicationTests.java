@@ -1,4 +1,4 @@
-package org.challenge.campsite;
+package org.challenge;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,9 +1,9 @@
 # Java Challenge - Campsite
 
 Assumptions:
-* The system don't validate more than ono reservation per user
+* The system don't validate more than one reservation per user
 * The system create in advance two months ahead of data in the CALENADR table.
-After that each month a store procedure or schedule jobs create the next month.
+* After every month a store procedure or schedule jobs create the next two month.
 
 H2:
 -   http://localhost:8080/h2-console

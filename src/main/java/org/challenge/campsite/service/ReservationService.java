@@ -2,18 +2,12 @@ package org.challenge.campsite.service;
 
 import org.challenge.campsite.entity.Reservation;
 import org.challenge.campsite.exception.EntityNotFound;
-import org.challenge.campsite.exception.InvalidRequest;
 import org.challenge.campsite.repository.ReservationRepository;
-import org.challenge.campsite.validator.DateValidator;
 import org.challenge.campsite.validator.ReservationValidator;
 import org.challenge.campsite.vo.ReservationVO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -21,9 +15,9 @@ public class ReservationService {
     @Value("${campsite.max_reservation_days}")
     private int MAX_VISITORS_DAYS;
 
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
 
-    private CalendarService calendarService;
+    private final CalendarService calendarService;
 
     public ReservationService(ReservationRepository reservationRepository, CalendarService calendarService) {
         this.reservationRepository = reservationRepository;
@@ -31,19 +25,17 @@ public class ReservationService {
     }
 
     public ReservationVO getReservation(long id) {
-        Reservation reservation = findById(id).orElseThrow(() -> new EntityNotFound("Entity not found"));
+        Reservation reservation = findById(id);
         return ReservationVO.fromEntity(reservation);
     }
 
-    //@Transactional
     public ReservationVO addUpdateReservation(ReservationVO reservationVO) {
-        DateValidator.validateDates(reservationVO.getCheckIn(), reservationVO.getCheckOut());
         ReservationValidator.validateReservation(reservationVO);
         Reservation newReservation = ReservationVO.toEntity(reservationVO);
-        if(reservationVO.getId() < 1){
+        if (reservationVO.getId() < 1) {
             System.out.println("SAVING");
             saveReservation(newReservation);
-        }else{
+        } else {
             System.out.println("UPDATING");
             updateReservation(newReservation);
         }
@@ -51,30 +43,51 @@ public class ReservationService {
     }
 
 
-
-
     @Transactional
     public Reservation saveReservation(Reservation reservation) {
-
-
+        calendarService.addVisitors(reservation.getCheckIn(), reservation.getCheckOut(), reservation.getTotalGroup());
         return reservationRepository.save(reservation);
     }
 
 
     @Transactional
     public Reservation updateReservation(Reservation reservation) {
-        //return saveReservation(reservation);
-        return null;
+        Reservation oldReservation = findById(reservation.getId());
+        if(hasChangeDatesOrTotalGroup(reservation, oldReservation)) {
+            calendarService.updateVisitors(reservation.getCheckIn(), reservation.getCheckOut(), reservation.getTotalGroup(), oldReservation.getCheckIn(), oldReservation.getCheckOut(), oldReservation.getTotalGroup());
+        }
+        updateReservationEntity(oldReservation, reservation);
+        return reservationRepository.save(oldReservation);
     }
 
-    private Optional<Reservation> findById(long id) {
-        return reservationRepository.findById(id);
-    }
 
     @Transactional
     public void deleteReservation(long id) {
-        Reservation reservation = findById(id).orElseThrow(() -> new EntityNotFound("Entity not found"));
+        Reservation reservation = findById(id);
+        calendarService.removeVisitors(reservation.getCheckIn(), reservation.getCheckOut(), reservation.getTotalGroup());
         reservationRepository.delete(reservation);
+    }
+
+    private void updateReservationEntity(Reservation oldReservation, Reservation reservation) {
+        oldReservation.setTotalGroup(reservation.getTotalGroup());
+        oldReservation.setNameVisitor(reservation.getNameVisitor());
+        oldReservation.setEmail(reservation.getEmail());
+        oldReservation.setCheckOut(reservation.getCheckOut());
+        oldReservation.setCheckIn(reservation.getCheckIn());
+    }
+
+    private boolean hasChangeDatesOrTotalGroup(Reservation reservation, Reservation oldReservation) {
+        if (!reservation.getCheckIn().isEqual(oldReservation.getCheckIn()))
+            return true;
+        if (!reservation.getCheckOut().isEqual(oldReservation.getCheckOut()))
+            return true;
+        if(!reservation.getTotalGroup().equals(oldReservation.getTotalGroup()))
+            return true;
+        return false;
+    }
+
+    private Reservation findById(long id) {
+        return reservationRepository.findById(id).orElseThrow(() -> new EntityNotFound("Entity not found"));
     }
 
 }

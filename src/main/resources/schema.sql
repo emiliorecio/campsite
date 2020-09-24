@@ -1,33 +1,21 @@
-DROP TABLE IF EXISTS VISITOR;
-CREATE TABLE VISITOR
+drop table if exists calendar;
+create table calendar
 (
-    ID INT(11) NOT NULL AUTO_INCREMENT,
-    NAME_VISITOR VARCHAR(200) NOT NULL,
-    EMAIL VARCHAR(200) NOT NULL,
-    FAMILY_GROUP INT(4) NOT NULL,
-    PRIMARY KEY (ID)
+    id             bigint auto_increment
+        primary key,
+    date_cal       date not null,
+    total_visitors int  not null,
+    version        int  not null
 );
-DROP TABLE IF EXISTS CALENDAR;
-CREATE TABLE CALENDAR
+drop table if exists reservation;
+create table reservation
 (
- ID INT(11) NOT NULL AUTO_INCREMENT,
- DAY_DATE DATE NOT NULL,
- TOTAL_VISITORS INT(4) DEFAULT 0,
- PRIMARY KEY (ID)
+    id           bigint auto_increment
+        primary key,
+    check_in     date         null,
+    check_out    date         null,
+    email        varchar(255) null,
+    name_visitor varchar(255) null,
+    total_group  int          not null
 );
-
-DROP TABLE IF EXISTS RESERVATION;
-CREATE TABLE RESERVATION
-(
- ID INT(11) NOT NULL AUTO_INCREMENT,
- VISITOR_ID INT(11) NOT NULL,
- CHECK_IN DATETIME NOT NULL,
- CHECK_OUT DATETIME NOT NULL,
- PRIMARY KEY (ID),
- FOREIGN KEY (VISITOR_ID) REFERENCES VISITOR(ID)
-);
-
-
-
-
 

@@ -17,8 +17,6 @@ import java.sql.BatchUpdateException;
 @ControllerAdvice
 public class ReservationHandler extends ResponseEntityExceptionHandler {
 
-    //TODO MILO
-
     @Value("${campsite.error.db}")
     private String ERROR_DB;
 
@@ -51,5 +49,10 @@ public class ReservationHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BatchUpdateException.class)
     public ResponseEntity<?> handleBatchUpdateException(BatchUpdateException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ERROR_DB + e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR: " + e.getMessage());
     }
 }
