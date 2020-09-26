@@ -2,7 +2,6 @@ package org.challenge.campsite.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,8 +32,6 @@ public class Reservation {
     @NotBlank
     private String email;
 
-    @NotNull
-    @Range(min = 1)
-    private Integer totalGroup;
+    private int totalGroup;
 
 }

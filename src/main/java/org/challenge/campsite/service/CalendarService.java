@@ -34,7 +34,7 @@ public class CalendarService {
         return CalendarVO.getListCalendarVO(calendarList);
     }
 
-    public void addVisitors(LocalDate checkIn, LocalDate checkOut, Integer totalGroup) {
+    public void addVisitors(LocalDate checkIn, LocalDate checkOut, int totalGroup) {
         Set<Calendar> calendarList = calendarRepository.findAllByDateCalBetween(checkIn, checkOut, sortDateCal);
         for (Calendar calendar : calendarList) {
             checkMaxVisitors(calendar.getTotalVisitors() + totalGroup);
@@ -43,7 +43,7 @@ public class CalendarService {
         calendarRepository.saveAll(calendarList);
     }
 
-    public void updateVisitors(LocalDate checkIn, LocalDate checkOut, Integer totalGroup, LocalDate oldCheckIn, LocalDate oldCheckOut, Integer oldTotalGroup) {
+    public void updateVisitors(LocalDate checkIn, LocalDate checkOut, int totalGroup, LocalDate oldCheckIn, LocalDate oldCheckOut, int oldTotalGroup) {
         Set<Calendar> newCalendarList = calendarRepository.findAllByDateCalBetween(checkIn, checkOut, sortDateCal);
         Set<Calendar> oldCalendarList = calendarRepository.findAllByDateCalBetween(oldCheckIn, oldCheckOut, sortDateCal);
         Set<Calendar> uniqueNewCalendarList = getUniqueCalendarNewList(newCalendarList, oldCalendarList);
@@ -80,7 +80,7 @@ public class CalendarService {
         return true;
     }
 
-    public void removeVisitors(LocalDate checkIn, LocalDate checkOut, Integer totalGroup) {
+    public void removeVisitors(LocalDate checkIn, LocalDate checkOut, int totalGroup) {
         Set<Calendar> calendarList = calendarRepository.findAllByDateCalBetween(checkIn, checkOut, sortDateCal);
         for (Calendar calendar : calendarList) {
             calendar.setTotalVisitors(calendar.getTotalVisitors() - totalGroup);

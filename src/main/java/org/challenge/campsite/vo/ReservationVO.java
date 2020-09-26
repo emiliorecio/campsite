@@ -2,7 +2,6 @@ package org.challenge.campsite.vo;
 
 import lombok.Data;
 import org.challenge.campsite.entity.Reservation;
-import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -31,9 +30,7 @@ public class ReservationVO implements Serializable {
     @NotBlank
     private String email;
 
-    @NotNull
-    @Range(min = 1)
-    private Integer totalGroup;
+    private int totalGroup;
 
 
     public static ReservationVO fromEntity(Reservation entity) {

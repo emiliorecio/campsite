@@ -12,12 +12,12 @@ import java.util.Objects;
 @Component
 public class DateValidator {
 
-    private static long MAX_RESERVATION_DAYS;
-    private static long MONTH_IN_ADVANCE;
+    private static int MAX_RESERVATION_DAYS;
+    private static int MONTH_IN_ADVANCE;
     @Value("${campsite.max_reservation_days}")
-    private long max_reservation_days;
+    private int max_reservation_days;
     @Value("${campsite.month_in_advance}")
-    private long month_in_advance;
+    private int month_in_advance;
 
     public static void validateDates(LocalDate startDate, LocalDate endDate) {
         if (Objects.isNull(startDate) || ((Objects.isNull(endDate)))) {
@@ -43,12 +43,12 @@ public class DateValidator {
     }
 
     @Value("${campsite.month_in_advance}")
-    public void setMonth_in_advance(long month) {
+    public void setMonth_in_advance(int month) {
         MONTH_IN_ADVANCE = month;
     }
 
     @Value("${campsite.max_reservation_days}")
-    public void setMax_reservation_days(long max) {
+    public void setMax_reservation_days(int max) {
         MAX_RESERVATION_DAYS = max;
     }
 }

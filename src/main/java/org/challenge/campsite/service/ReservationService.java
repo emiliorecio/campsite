@@ -33,10 +33,8 @@ public class ReservationService {
         ReservationValidator.validateReservation(reservationVO);
         Reservation newReservation = ReservationVO.toEntity(reservationVO);
         if (reservationVO.getId() < 1) {
-            System.out.println("SAVING");
             saveReservation(newReservation);
         } else {
-            System.out.println("UPDATING");
             updateReservation(newReservation);
         }
         return ReservationVO.fromEntity(newReservation);
@@ -81,7 +79,7 @@ public class ReservationService {
             return true;
         if (!reservation.getCheckOut().isEqual(oldReservation.getCheckOut()))
             return true;
-        if(!reservation.getTotalGroup().equals(oldReservation.getTotalGroup()))
+        if(!(reservation.getTotalGroup() == oldReservation.getTotalGroup()))
             return true;
         return false;
     }
