@@ -8,7 +8,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 public class ReservationVO implements Serializable {
@@ -57,5 +61,11 @@ public class ReservationVO implements Serializable {
         entity.setNameVisitor(vo.getNameVisitor());
         entity.setTotalGroup(vo.getTotalGroup());
         return entity;
+    }
+
+    public static List<ReservationVO> getListReservationVO(List<Reservation> reservations) {
+        List<ReservationVO> reservationsVOList;
+        reservationsVOList = reservations.stream().map(a -> ReservationVO.fromEntity(a)).collect(Collectors.toList());
+        return reservationsVOList;
     }
 }

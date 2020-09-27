@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/reservation")
@@ -24,6 +26,11 @@ public class ReservationController {
     @GetMapping(value = "/{id}", produces = {DEFAULT_MEDIA})
     public ResponseEntity<ReservationVO> getReservation(@PathVariable(value = "id") long id) {
         return new ResponseEntity<>(reservationService.getReservation(id), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/all", produces = {DEFAULT_MEDIA})
+    public ResponseEntity<List<ReservationVO>> getAllReservation() {
+        return new ResponseEntity<>(reservationService.getAllReservation(), HttpStatus.OK);
     }
 
 

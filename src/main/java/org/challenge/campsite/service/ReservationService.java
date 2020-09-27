@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+
 @Service
 public class ReservationService {
 
@@ -88,4 +91,7 @@ public class ReservationService {
         return reservationRepository.findById(id).orElseThrow(() -> new EntityNotFound("Entity not found"));
     }
 
+    public List<ReservationVO> getAllReservation() {
+        return ReservationVO.getListReservationVO(reservationRepository.findAll());
+    }
 }

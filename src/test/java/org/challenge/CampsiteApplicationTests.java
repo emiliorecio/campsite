@@ -4,6 +4,7 @@ import org.challenge.campsite.CampsiteApplication;
 import org.challenge.campsite.entity.Reservation;
 import org.challenge.util.RandomCampsiteUtils;
 import org.challenge.util.TaskType;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,7 +89,7 @@ public class CampsiteApplicationTests {
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/reservation/" + id), HttpMethod.GET, entity, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
-            Long idJSON = getIdFromJSON(response, TaskType.MODIFY);
+            Long idJSON = getIdFromJSON(response, TaskType.GET);
             queue.put(id);
             System.out.println(getOkMessageResponse("Reservation acquired ID: " + idJSON));
         } else {
@@ -104,9 +105,7 @@ public class CampsiteApplicationTests {
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/reservation/" + id), HttpMethod.DELETE, entity, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {
-            Long idJSON = getIdFromJSON(response, TaskType.MODIFY);
-            queue.put(id);
-            System.out.println(getOkMessageResponse("Reservation deleted ID: " + idJSON));
+            System.out.println(getOkMessageResponse("Reservation deleted ID: " + id));
         } else {
             System.out.println(getBadMessageResponse("Can't delete reservation ID: " + id + " " + response.getStatusCode() + " " + response.getBody()));
         }
@@ -114,7 +113,8 @@ public class CampsiteApplicationTests {
     }
 
     @Test
-    public void runThreads() throws InterruptedException {
+    public void runThreads() throws Exception {
+        getAllReservationFromDBOrCreateSome();
         ExecutorService service = Executors.newFixedThreadPool(TOTAL_THREADS);
         CountDownLatch latch = new CountDownLatch(TOTAL_THREADS);
         for (int i = 0; i < TOTAL_THREADS; i++) {
@@ -130,7 +130,32 @@ public class CampsiteApplicationTests {
         latch.await();
     }
 
-    public void runTask() throws Exception {
+    //@Test
+    public void getAllReservationFromDBOrCreateSome() throws Exception {
+        HttpEntity<Reservation> entity = new HttpEntity<Reservation>(null, headers);
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/reservation/all"), HttpMethod.GET, entity, String.class);
+        JSONArray arrayObject = new JSONArray(response.getBody());;
+        if(arrayObject.length() > 0){
+            for (int i = 0; i < arrayObject.length(); ++i) {
+                JSONObject rec = arrayObject.getJSONObject(i);
+                Long id = rec.getLong("id");
+                queue.put(id);
+            }
+        }else{
+            for(int i = 0; i <= 10; i++){
+                testCreateSReservation();
+            }
+        }
+        if (response.getStatusCode().is2xxSuccessful()) {
+            System.out.println(getOkMessageResponse("Total reservation acquired: " + queue.size()));
+        } else {
+            System.out.println(getBadMessageResponse("Can't acquire reservations"));
+        }
+
+    }
+
+    private void runTask() throws Exception {
         TaskType task = randomCampsiteUtils.getRandomTask();
         switch (task) {
             case GET:
@@ -146,8 +171,6 @@ public class CampsiteApplicationTests {
                 testDeleteReservation();
                 break;
         }
-
-
     }
 
     private String createURLWithPort(String uri) {
@@ -155,7 +178,7 @@ public class CampsiteApplicationTests {
     }
 
     private String getOkMessageResponse(String msj) {
-        return ANSI_GREEN + LINE + "\n" + msj  + "\n" + LINE + ANSI_RESET;
+        return ANSI_GREEN + LINE + "\n" + msj + "\n" + LINE + ANSI_RESET;
     }
 
     private String getBadMessageResponse(String msj) {
@@ -165,18 +188,17 @@ public class CampsiteApplicationTests {
     private Long getID() throws InterruptedException {
         if (queue.isEmpty()) {
             return Long.valueOf(randomCampsiteUtils.getRandomTotalGroup());
-        }
-        else {
+        } else {
             return queue.poll(1, TimeUnit.SECONDS);
         }
     }
 
-    private Long getIdFromJSON(ResponseEntity<String> response, TaskType taskType){
-        JSONObject myObject = new JSONObject();
-        try{
+    private Long getIdFromJSON(ResponseEntity<String> response, TaskType taskType) {
+        JSONObject myObject;
+        try {
             myObject = new JSONObject(response.getBody());
-            return  Long.valueOf((Integer) myObject.get("id"));
-        }catch (Exception e){
+            return Long.valueOf((Integer) myObject.get("id"));
+        } catch (Exception e) {
             System.out.println(e.getMessage() + " Tasktype: " + taskType.toString() + " :::: " + response.getBody());
         }
         return 0L;
