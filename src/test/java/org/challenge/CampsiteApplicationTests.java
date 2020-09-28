@@ -128,9 +128,9 @@ public class CampsiteApplicationTests {
             });
         }
         latch.await();
-        System.out.println("PORT: " + port);
+        //System.out.println("PORT: " + port);
         //Sleep app to check the DB on mem
-        Thread.sleep(1000000);
+        //Thread.sleep(30000);
     }
 
     //@Test
