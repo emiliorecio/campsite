@@ -1,4 +1,4 @@
-package org.challenge.campsite.controller;
+package org.challenge.campsite.model;
 
 import org.challenge.campsite.service.ReservationService;
 import org.challenge.campsite.vo.ReservationVO;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/reservation")

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ReservationService {
@@ -54,7 +53,7 @@ public class ReservationService {
     @Transactional
     public Reservation updateReservation(Reservation reservation) {
         Reservation oldReservation = findById(reservation.getId());
-        if(hasChangeDatesOrTotalGroup(reservation, oldReservation)) {
+        if (hasChangeDatesOrTotalGroup(reservation, oldReservation)) {
             calendarService.updateVisitors(reservation.getCheckIn(), reservation.getCheckOut(), reservation.getTotalGroup(), oldReservation.getCheckIn(), oldReservation.getCheckOut(), oldReservation.getTotalGroup());
         }
         updateReservationEntity(oldReservation, reservation);
@@ -82,7 +81,7 @@ public class ReservationService {
             return true;
         if (!reservation.getCheckOut().isEqual(oldReservation.getCheckOut()))
             return true;
-        if(!(reservation.getTotalGroup() == oldReservation.getTotalGroup()))
+        if (!(reservation.getTotalGroup() == oldReservation.getTotalGroup()))
             return true;
         return false;
     }

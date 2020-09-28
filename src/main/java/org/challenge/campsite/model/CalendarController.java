@@ -1,4 +1,4 @@
-package org.challenge.campsite.controller;
+package org.challenge.campsite.model;
 
 import org.challenge.campsite.service.CalendarService;
 import org.challenge.campsite.vo.CalendarVO;

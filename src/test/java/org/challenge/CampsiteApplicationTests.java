@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = CampsiteApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = CampsiteApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ContextConfiguration(classes = RandomCampsiteUtils.class)
 public class CampsiteApplicationTests {
 
@@ -36,7 +36,7 @@ public class CampsiteApplicationTests {
     private static final int TOTAL_THREADS = 100;
 
     @LocalServerPort
-    private int port;
+    private int port = 8080;
 
     @Autowired
     RandomCampsiteUtils randomCampsiteUtils;
@@ -59,7 +59,7 @@ public class CampsiteApplicationTests {
             queue.put(idJSON);
             System.out.println(getOkMessageResponse("Reservation created ID: " + idJSON));
         } else {
-            System.out.println(getBadMessageResponse("Can't create reservation ID: " + reservation.getId() + " " + response.getStatusCode() + " " + response.getBody()));
+            System.out.println(getBadMessageResponse("Can't create reservation ID: " + reservation.getId() + " " + response.getStatusCode() + " " + response.getBody() + " " + reservation.toString()));
         }
     }
 
@@ -78,7 +78,7 @@ public class CampsiteApplicationTests {
             queue.put(id);
             System.out.println(getOkMessageResponse("Reservation modified ID: " + idJSON));
         } else {
-            System.out.println(getBadMessageResponse("Can't modify reservation ID: " + reservation.getId() + " " + response.getStatusCode() + " " + response.getBody()));
+            System.out.println(getBadMessageResponse("Can't modify reservation ID: " + reservation.getId() + " " + response.getStatusCode() + " " + response.getBody() + " " + reservation.toString()));
         }
     }
 
@@ -128,6 +128,9 @@ public class CampsiteApplicationTests {
             });
         }
         latch.await();
+        System.out.println("PORT: " + port);
+        //Sleep app to check the DB on mem
+        Thread.sleep(1000000);
     }
 
     //@Test

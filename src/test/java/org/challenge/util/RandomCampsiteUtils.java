@@ -31,7 +31,7 @@ public class RandomCampsiteUtils {
     }
 
     public int getRandomTotalGroup() {
-        return RandomUtils.nextInt(1, MAX_VISITORS_DAY + 1);
+        return RandomUtils.nextInt(1, (MAX_VISITORS_DAY + 1)/2);
     }
 
     public TaskType getRandomTask() {
